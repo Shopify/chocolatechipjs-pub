@@ -58,19 +58,21 @@
       xhr.handleResp = settings.success;
 
       var handleResponse = function() {
-        if (xhr.status === 0 && xhr.readyState === 4 || xhr.status >= 200 && xhr.status < 300 && xhr.readyState === 4 || xhr.status === 304 && xhr.readyState === 4 ) {
-          if (settings.dataType && (settings.dataType === 'json')) {
-            xhr.handleResp(JSON.parse(xhr.responseText));
+        deferred.notify(xhr.readyState, xhr);
+        if (xhr.readyState === 4) {
+          if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
+            if (settings.dataType && (settings.dataType === 'json')) {
+              xhr.handleResp(JSON.parse(xhr.responseText));
+            } else {
+              xhr.handleResp(xhr.responseText);
+            }
             deferred.resolve(xhr.responseText, settings.context, xhr);
           } else {
-            xhr.handleResp(xhr.responseText);
-            deferred.resolve(xhr.responseText, settings.context, xhr);
+            if (typeof settings.error == "function") {
+              settings.error(xhr);
+            }
+            deferred.reject(xhr.status, settings.context, xhr);
           }
-        } else if(xhr.status >= 400) {
-          if (typeof settings.error == "function") {
-            settings.error(xhr);
-          }
-          deferred.reject(xhr.status, settings.context, xhr);
         }
       };
 
