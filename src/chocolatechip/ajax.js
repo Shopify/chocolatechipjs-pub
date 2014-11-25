@@ -93,7 +93,7 @@
     // Parameters: url, data, success, dataType.
     get : function ( url, data, success, dataType ) {
       if (!url) {
-        return;
+        return (new $.Deferred()).reject(412);
       }
       if (!data) {
         return $.ajax({url : url, type: 'GET'});
@@ -171,10 +171,10 @@
     // Parameters: url, data, success, dataType.
     post : function ( url, data, success, dataType ) {
       if (!url) {
-        return;
+        return (new $.Deferred()).reject(412);
       }
       if (!data) {
-        return;
+        return (new $.Deferred()).reject(412);
       }
       if (typeof data === 'function' && !dataType) {
         if (typeof success === 'string') {
@@ -182,14 +182,14 @@
         } else {
           dataType = 'form';
         }
-        $.ajax({url : url, type: 'POST', success : data, dataType : dataType});
+        return $.ajax({url : url, type: 'POST', success : data, dataType : dataType});
       } else if (typeof data === 'string' && typeof success === 'function') {
         if (!dataType) {
           dataType = 'form';
         }
-        $.ajax({url : url, type: 'POST', data : data, success : success, dataType : dataType});
+        return $.ajax({url : url, type: 'POST', data : data, success : success, dataType : dataType});
       } else if (typeof data === "object" && data.constructor === FormData && typeof success === 'function') {
-        $.ajax({url : url, type: 'POST', data : data, success : success, dataType : null});
+        return $.ajax({url : url, type: 'POST', data : data, success : success, dataType : null});
       }
     }
   });
